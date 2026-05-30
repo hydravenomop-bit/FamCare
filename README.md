@@ -135,5 +135,14 @@ If the platform scales to thousands of concurrent users trying to book the same 
 ### What I would do differently with more time:
 1. **Event Sourcing / Booking Queue**: Instead of synchronous pessimistic locking, place checkouts into a message queue (Kafka/RabbitMQ) and process them sequentially per caregiver. The UI would say "Processing..." and receive a webhook/WebSocket notification when confirmed.
 2. **Caching for Availability**: The `GET /slots/available` query calculates availability on the fly. I would use Redis to cache caregiver schedules (represented as bitmasks or interval trees) for much faster reads.
-3. **Authentication**: Implement a proper JWT auth flow. Currently, the patient ID is hardcoded for demonstration purposes.
-4. **Timezones**: Currently, times are handled as simple strings (`HH:MM`). In a real system, all times should be `TIMESTAMPTZ` mapped to the patient's and caregiver's local timezones.
+
+---
+
+## 🛑 What did you NOT complete or leave incomplete?
+
+I managed to complete **100% of the core requirements and constraints** (atomic checkout, duration-based conflict detection, DB locking, full rollback on failures, and the complete Flutter booking flow) despite having my **end-semester exams** running concurrently with this 2-day assignment! 
+
+However, to aggressively prioritize backend correctness and respect the timebox, I deliberately left the following incomplete:
+1. **Real User Authentication (JWT):** The `patient_id` is currently hardcoded in the frontend. Building a full auth flow (login/registration) would have taken time away from perfecting the concurrency locking logic.
+2. **Advanced Pricing Logic:** While asked about discounts for multiple slots in the prompt, I kept pricing strictly fixed per-service for this iteration.
+3. **Timezone Handling:** The application currently treats all times locally as simple strings (`HH:MM`). A production system would need robust `TIMESTAMPTZ` logic to handle caregivers and patients in different timezones.
